@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 
+import faker from "faker";
+
+import { FixedSizeList } from "react-window";
+
 const loadJSON = key =>
   key && JSON.parse(localStorage.getItem(key));
 const saveJSON = (key, data) =>
@@ -37,6 +41,35 @@ function GitHubUser({ login }) {
   return null;
 }
 
+// render prop
+function List({ data = [], renderItem, renderEmpty }) {
+  return !data.length ? (
+    renderEmpty
+  ) : (
+    <ul>
+      {data.map((item, i) => (
+        <li key={i}>{renderItem(item)}</li>
+      ))}
+    </ul>
+  );
+}
+
+const bigList = [...Array(5000)].map(() => ({
+  name: faker.name.findName(),
+  email: faker.internet.email(),
+  avatar: faker.internet.avatar()
+}));
+
 export default function App() {
-    return <GitHubUser login="kijimaD"></GitHubUser>
+  // return <GitHubUser login="kijimaD"></GitHubUser>
+  const renderItem = item => (
+    <div style={{ display: "flex" }}>
+      <img src={item.avatar} alt={item.name} width={50} />
+      <p>
+        {item.name} - {item.email}
+      </p>
+    </div>
+  );
+
+  return <List data={bigList} renderItem={renderItem}></List>
 }
